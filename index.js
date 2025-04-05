@@ -1,6 +1,12 @@
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d')
 
+
+const scoreEl = document.querySelector('#scoreEl')
+const startGamebtn = document.querySelector('#startGamebtn')
+const modalEL = document.querySelector('#modalEL')
+const bigScoreEl = document.querySelector('#bigScoreEl')
+
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
@@ -104,6 +110,7 @@ function spawnEnemy() {
 }
 
 let animationId
+let score = 0
 function animate() {
     animationId = requestAnimationFrame(animate)
 
@@ -131,6 +138,8 @@ function animate() {
 
         if (dist - enemy.radius - player.radius < 1) {
             cancelAnimationFrame(animationId)
+            modalEL.style.display = 'flex'
+            bigScoreEl.innerHTML = score;
         }
 
         projectiles.forEach((projectile, projectileindex) => {
@@ -138,10 +147,21 @@ function animate() {
             )
 
             if (dist - enemy.radius - projectile.radius < 1) {
-                setTimeout(() => {
-                    ememies.splice(index, 1)
-                    projectiles.splice(projectileindex, 1)
-                }, 0)
+
+                score += 100
+                scoreEl.innerHTML = score
+                if (enemy.radius - 10 > 10) {
+                    enemy.radius -= 10
+                    setTimeout(() => {
+                        projectiles.splice(projectileindex, 1)
+                    }, 0)
+                } else {
+
+                    setTimeout(() => {
+                        ememies.splice(index, 1)
+                        projectiles.splice(projectileindex, 1)
+                    }, 0)
+                }
             }
         })
     })
@@ -159,5 +179,11 @@ addEventListener('click', (event) => {
     projectiles.push(new Projectile(canvas.width / 2, canvas.height / 2, 5, 'white', velocity))
 })
 
-animate()
-spawnEnemy()
+startGamebtn.addEventListener('click', () => {
+    animate()
+    spawnEnemy()
+
+    modalEL.style.display = 'none'
+})
+
+
